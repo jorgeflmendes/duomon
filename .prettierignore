@@ -1,0 +1,15 @@
+.git
+.pytest_cache
+.ruff_cache
+__pycache__
+artifacts
+external
+showdown-client
+showdown-server
+learned_weights
+outputs
+training_artifacts
+
+*.pt
+*.pth
+*.onnx

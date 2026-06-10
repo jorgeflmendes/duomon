@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.ruff_cache/
+
+# Runtime artifacts
+artifacts/
+outputs/
+backups/
+training_artifacts/
+runtime_training_artifacts/
+learned_weights/*
+learned_weights/professional/
+learned_weights/**/*.jsonl
+curated_battles/
+*.pt
+*.pth
+*.jsonl.gz
+*.jsonl.zst
+*.zst
+*.log
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE / editor
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# External Showdown forks are tracked as git submodules.
+external/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Backup archives
+*.zip
+docs/generalization_benchmark_findings.md

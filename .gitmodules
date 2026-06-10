@@ -1,0 +1,9 @@
+[submodule "showdown-server"]
+	path = showdown-server
+	url = https://github.com/jorgeflmendes/pokemon-showdown-for-duomon.git
+	branch = master
+
+[submodule "showdown-client"]
+	path = showdown-client
+	url = https://github.com/jorgeflmendes/pokemon-showdown-client-for-duomon.git
+	branch = master
