@@ -1,0 +1,369 @@
+.ctrl-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 0;
+  background: var(--bg-paper);
+  border-bottom: 1px solid var(--line);
+}
+.ctrl-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 10px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  color: var(--fg-muted);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  position: relative;
+  transition:
+    color 0.12s ease,
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+.ctrl-tab:hover {
+  color: var(--fg);
+  background: var(--chip-bg);
+}
+.ctrl-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 6%, var(--bg-paper));
+}
+.ctrl-tab.active::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.5;
+}
+.ctrl-tab-icon {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: var(--chip-bg);
+  color: var(--fg-faint);
+  font-size: 0;
+}
+.ctrl-tab-icon::before {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+#benchmarkTab .ctrl-tab-icon::before {
+  content: "RUN";
+}
+#trainTab .ctrl-tab-icon::before {
+  content: "MLP";
+}
+.ctrl-tab.active .ctrl-tab-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+
+.section {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-4);
+}
+.section + .section {
+  border-top: 1px dashed var(--line);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title .tnum-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-faint);
+  background: var(--chip-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+.section-sub {
+  color: var(--fg-muted);
+  font-size: 11.5px;
+}
+
+
+.opp-checks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.opp-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--line);
+  background: var(--bg-elevate);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.12s ease;
+}
+.opp-check:has(input:checked) {
+  border-color: var(--type);
+  background: color-mix(in oklab, var(--type) 8%, var(--bg-elevate));
+}
+.opp-check input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid var(--type);
+  background: transparent;
+  flex-shrink: 0;
+}
+.opp-check input:checked {
+  background: var(--type);
+  box-shadow: inset 0 0 0 2px var(--bg-elevate);
+}
+.opp-check .opp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--type);
+}
+
+
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--type) 16%, var(--bg-paper));
+  color: var(--type);
+  border: 1px solid color-mix(in oklab, var(--type) 30%, var(--line));
+}
+.type-pill .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--type);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+  gap: var(--s-3);
+  padding: var(--s-4);
+  min-height: 0;
+  overflow: visible;
+}
+@media (max-width: 1600px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(300px, 1fr));
+  }
+}
+@media (max-width: 920px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tcard {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  min-height: 190px;
+  border-radius: var(--r-md);
+  background: var(--bg-elevate);
+  border: 1px solid var(--line);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
+  overflow: hidden;
+}
+
+.benchmark-context {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  min-height: 92px;
+  border-radius: var(--r-md);
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, var(--line));
+  background: color-mix(in oklab, var(--accent) 7%, var(--bg-elevate));
+}
+
+.benchmark-context-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: 0;
+}
+
+.benchmark-context-detail {
+  color: var(--fg-muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.tcard:hover {
+  border-color: var(--line-strong);
+}
+.tcard.active {
+  border-color: var(--type);
+  box-shadow:
+    0 0 0 1px var(--type),
+    var(--shadow-md);
+}
+.tcard.running::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    color-mix(in oklab, var(--type) 8%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.tcard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tcard-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+.tcard-state {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--chip-bg);
+}
+.tcard.running .tcard-state {
+  color: var(--c-error);
+  background: color-mix(in oklab, var(--c-error) 14%, transparent);
+}
+.tcard.done .tcard-state {
+  color: var(--c-win);
+  background: color-mix(in oklab, var(--c-win) 14%, transparent);
+}
+.tcard.pending .tcard-state {
+  color: var(--fg-faint);
+}
+
+.tcard-rate {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-display);
+}
+.tcard-rate .num {
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+}
+.tcard-rate .unit {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+.tcard-rate .delta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--fg-faint);
+}
+
+.tcard-counts {
+  display: flex;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--fg-muted);
+}
+.tcard-counts b {
+  color: var(--fg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tcard-counts .sep {
+  color: var(--fg-faint);
+}
+
+
+.hpbar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.hpbar > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--type), color-mix(in oklab, var(--type) 70%, white));
+  transition: width 0.4s ease;
+}
+.tcard-desc {
+  font-size: 11.5px;
+  color: var(--fg-muted);
+  line-height: 1.4;
+  min-height: 32px;
+}

@@ -1,0 +1,390 @@
+@import url("/theme.css");
+@import url("/components.css");
+
+.brand-mark::before,
+.brand-mark::after,
+.empty-state .ball::after {
+  content: "";
+  position: absolute;
+}
+
+.brand-mark::before,
+.brand-mark::after {
+  inset: 8px;
+  border-radius: 50%;
+}
+
+.brand-mark::before {
+  background: linear-gradient(135deg, var(--brand-red) 0 49%, transparent 50%);
+}
+
+.brand-mark::after {
+  border: 2px solid var(--bg-paper);
+}
+
+.panel-head > span:first-child,
+.panel-head > button:first-child,
+.panel-head .ptitle {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.panel-head button {
+  border-radius: var(--r-sm);
+  color: var(--fg-muted);
+  padding: 4px 8px;
+}
+
+.panel-head button:hover {
+  background: var(--chip-bg);
+  color: var(--fg);
+}
+
+.controls-panel {
+  overflow: hidden;
+}
+
+.control-grid {
+  display: grid;
+  gap: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  align-content: start;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  display: grid;
+  grid-auto-rows: min-content;
+  align-content: start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 0;
+  border-top: 1px dashed var(--line);
+  background: transparent;
+}
+
+fieldset:first-child {
+  border-top: 0;
+}
+
+legend {
+  padding: 0;
+  margin-bottom: var(--s-1);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--fg);
+  letter-spacing: -0.01em;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.inline-toggle,
+.check-grid label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.inline-toggle input,
+.check-grid input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  flex: 0 0 16px;
+  accent-color: var(--accent);
+}
+
+.check-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.check-grid label {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-elevate);
+}
+
+.check-grid label:nth-child(1) {
+  --type: var(--type-random);
+}
+.check-grid label:nth-child(2) {
+  --type: var(--type-maxpower);
+}
+.check-grid label:nth-child(3) {
+  --type: var(--type-simple);
+}
+.check-grid label:nth-child(4) {
+  --type: var(--type-abyssal);
+}
+
+.check-grid label:has(input:checked) {
+  border-color: var(--type);
+  background: color-mix(in oklab, var(--type) 8%, var(--bg-elevate));
+}
+
+.field-help,
+.option-notice {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 10px;
+  background: var(--bg-elevate);
+  color: var(--fg-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.field-help {
+  display: grid;
+  gap: 4px;
+}
+
+.option-notice {
+  border-color: color-mix(in oklab, var(--c-error) 34%, var(--line));
+  background: color-mix(in oklab, var(--c-error) 10%, var(--bg-elevate));
+  color: var(--c-error);
+  font-weight: 600;
+}
+
+.team-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.team-actions button,
+#benchmarkBtn,
+#pauseBenchmarkBtn,
+#stopBenchmarkBtn,
+#trainBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--bg-elevate);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 12.5px;
+  text-align: center;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.06s ease;
+}
+
+.team-actions button {
+  flex: 1 1 140px;
+  min-width: 0;
+  white-space: normal;
+}
+
+#benchmarkBtn,
+#trainBtn {
+  width: 100%;
+  padding: 11px 16px;
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-2);
+  font-size: 13px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 1px 0 var(--accent-2);
+}
+
+.benchmark-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.benchmark-actions #benchmarkBtn {
+  grid-column: 1 / -1;
+}
+
+#pauseBenchmarkBtn,
+#stopBenchmarkBtn {
+  width: 100%;
+  min-height: 36px;
+}
+
+#stopBenchmarkBtn {
+  border-color: color-mix(in oklab, var(--c-loss) 45%, var(--line));
+  color: var(--c-loss);
+}
+
+#pauseBenchmarkBtn:disabled,
+#stopBenchmarkBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.team-actions button:hover,
+#benchmarkBtn:hover,
+#pauseBenchmarkBtn:hover:not(:disabled),
+#stopBenchmarkBtn:hover:not(:disabled),
+#trainBtn:hover {
+  border-color: var(--accent-2);
+}
+
+textarea {
+  max-width: 100%;
+  min-height: 92px;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.team-fieldset textarea {
+  height: 118px;
+}
+
+#trainSection input,
+#trainSection select {
+  min-height: 34px;
+  max-height: 38px;
+}
+
+.job-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+#jobProgressLabel {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+#jobProgressPercent {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.job-progress progress {
+  width: 100%;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-inset);
+  accent-color: var(--accent);
+}
+
+.job-eta {
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+}
+
+.summary-grid > .empty-state,
+#metricRows > .empty-state {
+  grid-column: 1 / -1;
+}
+
+.empty-state .ball {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: conic-gradient(from 45deg, var(--accent) 0 50%, var(--bg-elevate) 50% 100%);
+  position: relative;
+  margin: 0 auto var(--s-3);
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.2);
+  border: 2px solid var(--bg-mark);
+  opacity: 0.5;
+}
+
+.empty-state .ball::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: var(--bg-paper);
+  border: 2px solid var(--bg-mark);
+  border-radius: 50%;
+}
+
+.mcard .metric-opponents {
+  display: grid;
+  gap: 4px;
+}
+
+.metric-opponent-pill {
+  display: block;
+  width: 100%;
+  padding: 2px 0;
+  color: var(--fg-muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.2;
+}
+
+.replay-stage {
+  flex: 1;
+}
+
+#replayFrame {
+  width: 100%;
+  flex: 1;
+  min-height: 620px;
+  border: 0;
+  background:
+    radial-gradient(
+      ellipse at 50% 100%,
+      color-mix(in oklab, var(--accent) 14%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse at 50% 0%,
+      color-mix(in oklab, var(--type-abyssal) 14%, transparent),
+      transparent 60%
+    ),
+    var(--bg-inset);
+}
+
+.failed {
+  color: var(--c-loss) !important;
+}
+
+@media (max-width: 560px) {
+  .check-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

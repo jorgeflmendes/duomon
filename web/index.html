@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DuoMon - benchmark dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"],
+          ],
+        },
+        svg: {
+          fontCache: "global",
+        },
+        options: {
+          skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"],
+        },
+      };
+    </script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <div class="brand-wordmark">duo<em>mon</em></div>
+            <div id="statusLine" class="brand-tagline">
+              Joint reranker benchmark &middot; gen9 doubles
+            </div>
+          </div>
+        </div>
+        <div class="statusbar" aria-live="polite">
+          <span id="connectionState" class="status-pill" data-state="idle"
+            ><span class="dot"></span>Ready</span
+          >
+          <span id="headerEta" class="status-pill"
+            ><span class="mono">ETA</span> <b class="mono tnum">--</b></span
+          >
+          <span id="lastRefresh" class="status-pill"
+            ><span class="mono">SYNC</span> <b class="mono tnum">--</b></span
+          >
+        </div>
+      </header>
+
+      <main class="dash">
+        <section class="panel area-controls controls-panel">
+          <div class="panel-head">
+            <span>Run Controls</span>
+          </div>
+          <div class="ctrl-tabs" role="tablist" aria-label="Run controls">
+            <button
+              id="benchmarkTab"
+              class="ctrl-tab active"
+              type="button"
+              role="tab"
+              aria-selected="true"
+              aria-controls="benchmarkSection"
+            >
+              <span class="ctrl-tab-icon">▶</span> Benchmark
+            </button>
+            <button
+              id="trainTab"
+              class="ctrl-tab"
+              type="button"
+              role="tab"
+              aria-selected="false"
+              aria-controls="trainSection"
+            >
+              <span class="ctrl-tab-icon">⌬</span> Train reranker
+            </button>
+          </div>
+          <div id="jobProgress" class="job-progress" hidden>
+            <div class="job-progress-row">
+              <span id="jobProgressLabel">No job running.</span>
+              <span id="jobProgressPercent">0%</span>
+            </div>
+            <progress id="jobProgressBar" max="100" value="0"></progress>
+            <div id="jobEta" class="job-eta">Elapsed 0s | ETA --</div>
+          </div>
+          <div class="control-grid">
+            <fieldset id="benchmarkSection">
+              <legend>Benchmark</legend>
+              <label>
+                Battles per opponent
+                <input
+                  id="battleCountInput"
+                  type="number"
+                  min="1"
+                  max="2000"
+                  step="1"
+                  value="200"
+                />
+              </label>
+              <label>
+                Parallelism
+                <input id="parallelismInput" type="number" min="1" max="32" step="1" value="32" />
+              </label>
+              <div class="check-grid" id="opponentChecks">
+                <label><input type="checkbox" value="random" /> Random</label>
+                <label><input type="checkbox" value="maxpower" /> MaxPower</label>
+                <label><input type="checkbox" value="simpleheuristics" checked /> Simple</label>
+                <label><input type="checkbox" value="abyssal" checked /> Abyssal</label>
+              </div>
+              <label>
+                Agent model
+                <select id="benchmarkProfileSelect">
+                  <option value="ctde_mlp">CTDE MLP</option>
+                </select>
+              </label>
+              <label class="inline-toggle">
+                <input id="communicationToggle" type="checkbox" checked />
+                Enable inter-agent communication
+              </label>
+              <div class="benchmark-actions">
+                <button id="benchmarkBtn" type="button">Benchmark</button>
+                <button id="pauseBenchmarkBtn" type="button" disabled>Pause</button>
+                <button id="stopBenchmarkBtn" type="button" disabled>Stop</button>
+              </div>
+            </fieldset>
+
+            <fieldset id="trainSection" hidden>
+              <legend>Train CTDE Reranker</legend>
+              <div class="field-help">
+                <strong>Trains:</strong> opponent-specific CTDE joint reranker MLP model(s) from
+                saved candidate-action examples and battle outcomes.
+                <span id="trainScopeLine"></span>
+              </div>
+              <div id="retrainNotice" class="option-notice" hidden>
+                Options changed. Retrain the CTDE reranker before comparing new benchmark results.
+              </div>
+              <label id="trainOpponentLabel">
+                Model target
+                <select id="trainOpponentSelect">
+                  <option value="both">Both SimpleHeuristics and Abyssal models</option>
+                  <option value="simple">SimpleHeuristics model only</option>
+                  <option value="abyssal">Abyssal model only</option>
+                </select>
+              </label>
+              <label>
+                Training mode
+                <select id="trainModeSelect">
+                  <option value="smart">Smart CTDE with early stopping</option>
+                  <option value="standard">Standard CTDE</option>
+                </select>
+              </label>
+              <label>
+                Epochs
+                <input
+                  id="trainEpochsInput"
+                  type="number"
+                  min="1"
+                  max="500"
+                  step="1"
+                  placeholder="48"
+                />
+              </label>
+              <label>
+                Batch size
+                <input
+                  id="trainBatchInput"
+                  type="number"
+                  min="16"
+                  max="8192"
+                  step="16"
+                  placeholder="512"
+                />
+              </label>
+              <label>
+                Learning rate
+                <input
+                  id="trainLrInput"
+                  type="number"
+                  min="0.00001"
+                  max="0.1"
+                  step="0.0001"
+                  placeholder="0.0012"
+                />
+              </label>
+              <label>
+                Dropout
+                <input
+                  id="trainDropoutInput"
+                  type="number"
+                  min="0"
+                  max="0.8"
+                  step="0.01"
+                  placeholder="0 (smart: 0.10)"
+                />
+              </label>
+              <label>
+                Early stopping patience (0 = off)
+                <input
+                  id="trainEarlyStopInput"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="1"
+                  placeholder="0 (smart: 16)"
+                />
+              </label>
+              <button id="trainBtn" type="button">Train selected CTDE model(s)</button>
+            </fieldset>
+
+            <fieldset class="team-fieldset">
+              <legend>Ally Team</legend>
+              <label class="inline-toggle">
+                <input id="fixedTeamToggle" type="checkbox" checked />
+                Use curated ally teams below
+              </label>
+              <label class="inline-toggle">
+                <input id="mirrorOpponentToggle" type="checkbox" />
+                Mirror ally teams on opponents
+              </label>
+              <div class="team-actions">
+                <button id="randomTeamBtn" type="button">Generate random ally team</button>
+                <button id="defaultTeamBtn" type="button">Restore curated team</button>
+              </div>
+              <label>
+                Ally p1 team
+                <textarea id="allyP1TeamInput" spellcheck="false"></textarea>
+              </label>
+              <label>
+                Ally p3 team
+                <textarea id="allyP3TeamInput" spellcheck="false"></textarea>
+              </label>
+            </fieldset>
+          </div>
+        </section>
+
+        <section id="summaryPanel" class="panel area-summary summary-panel">
+          <div class="panel-head">
+            <span id="summaryTitle">Awaiting run</span>
+            <button id="refreshBattlesBtn" type="button">Refresh</button>
+          </div>
+          <div id="summaryCards" class="summary-grid">
+            <div class="empty-state">
+              <div class="ball"></div>
+              <div class="es-title">No benchmark has run yet</div>
+              <div class="es-sub">Configure opponents on the left and run a benchmark.</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="metricsPanel" class="panel area-metrics metrics-panel">
+          <div class="panel-head">
+            <span>Benchmark Metrics</span>
+            <span class="pcount">7 metrics</span>
+          </div>
+          <div id="artifactPanel" class="artifact-panel" hidden></div>
+          <div id="metricRows" class="metrics-grid" aria-label="Benchmark metrics">
+            <div class="empty-state">
+              <div class="es-sub">
+                Win rate | Generalization | Risk | Threat coverage | Efficiency
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel area-battles battles-panel">
+          <div class="panel-head">
+            <span>Benchmark Battles</span>
+          </div>
+          <div id="opponentTabs" class="tabbar"></div>
+          <div id="resultFilters" class="filters">
+            <button type="button" data-result="all" class="filter-btn active">All</button>
+            <button type="button" data-result="win" class="filter-btn">Wins</button>
+            <button type="button" data-result="loss" class="filter-btn">Losses</button>
+            <button type="button" data-result="error" class="filter-btn">Errors</button>
+          </div>
+          <div id="battleList" class="battle-list"></div>
+        </section>
+
+        <section class="panel area-replay replay-panel">
+          <div class="panel-head">
+            <span id="replayTitle">Replay Viewer</span>
+          </div>
+          <div class="replay-stage">
+            <iframe
+              id="replayFrame"
+              title="Selected benchmark battle replay"
+              src="about:blank"
+            ></iframe>
+          </div>
+        </section>
+
+        <section class="panel area-trace trace-panel">
+          <div class="panel-head">
+            <span id="traceTitle">Decision Trace</span>
+            <div class="trace-head-actions">
+              <span id="traceCount" class="pcount">No battle selected</span>
+              <button id="traceModeBtn" type="button" hidden>Show all turns</button>
+            </div>
+          </div>
+          <div id="traceBody" class="trace-body">
+            <div class="empty-state">
+              <div class="es-sub">
+                Select a benchmark battle to inspect agent proposals, communication, joint plans,
+                gates, and final actions.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel area-log log-panel">
+          <div class="panel-head">
+            <span>Job Log</span>
+            <button id="clearBtn" type="button">Clear</button>
+          </div>
+          <pre id="logOutput" class="log-out">No job running.</pre>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
