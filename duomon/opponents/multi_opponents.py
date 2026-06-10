@@ -1,0 +1,22 @@
+from __future__ import annotations
+
+import importlib
+
+_EXPORT_MODULES = (
+    "multi_opponent_utils",
+    "multi_opponent_basic",
+    "multi_opponent_damage",
+    "multi_opponent_abyssal",
+    "multi_opponent_race",
+)
+
+__all__: list[str] = []
+
+for _module_name in _EXPORT_MODULES:
+    _module = importlib.import_module(f"{__package__}.{_module_name}")
+    for _name in getattr(_module, "__all__", ()):
+        globals()[_name] = getattr(_module, _name)
+        if _name not in __all__:
+            __all__.append(_name)
+
+del importlib, _EXPORT_MODULES, _module, _module_name, _name

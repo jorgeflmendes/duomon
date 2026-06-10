@@ -1,0 +1,118 @@
+from __future__ import annotations
+
+from .benchmark_metrics_context import *
+
+
+METRIC_DEFINITIONS: Dict[str, Dict[str, str]] = {
+    "win_rate": {
+        "label": "Win-rate",
+        "measures": "Final strategy quality",
+        "compare": "Battle simulation",
+        "direction": "higher",
+        "summary": "Percentage of finished battles won by the allied pair.",
+        "estimation": "Wins / finished battles. The interval uses a 95% Wilson estimate, which is more stable than a simple +/- margin on small samples.",
+        "formula": "wins / finished_battles",
+    },
+    "average_turns": {
+        "label": "Avg turns",
+        "measures": "Battle length",
+        "compare": "Game pacing",
+        "direction": "neutral",
+        "summary": "Mean number of turns per battle across all finished games.",
+        "estimation": "Max turn index per battle, averaged over all battles with turn logs.",
+        "formula": "sum(max_turn_per_battle) / n_battles",
+    },
+    "average_decision_latency": {
+        "label": "Decision latency",
+        "measures": "Per-battle wall time",
+        "compare": "Inference cost",
+        "direction": "lower",
+        "summary": "Mean elapsed seconds per battle from start to result.",
+        "estimation": "elapsed_seconds field from battle result records, averaged over finished battles.",
+        "formula": "sum(elapsed_seconds) / finished_battles",
+    },
+    "illegal_rejected_move_rate": {
+        "label": "Illegal/rejected moves",
+        "measures": "Safety and legality",
+        "compare": "Pre-move validation",
+        "direction": "lower",
+        "summary": "Fraction of decision turns where a move was rejected or illegal.",
+        "estimation": "Counts turns with a veto_reason, rejected flag, or repeat-order marker. Lower is better.",
+        "formula": "rejected_turns / analysed_turns",
+    },
+    "ctde_top1_alignment": {
+        "label": "CTDE top-1 alignment",
+        "measures": "Reranker quality",
+        "compare": "CTDE MLP scoring",
+        "direction": "higher",
+        "summary": "Fraction of turns where the CTDE reranker's top-1 pair matches the chosen pair.",
+        "estimation": "Computed from ctde_joint_examples.jsonl when available. Requires outcome labels.",
+        "formula": "ctde_chosen_top1 / ctde_scored_turns",
+    },
+    "model_inference_latency": {
+        "label": "Model inference latency",
+        "measures": "Learned model cost",
+        "compare": "Component timing",
+        "direction": "lower",
+        "summary": "Mean milliseconds spent in learned model inference per decision turn.",
+        "estimation": "Aggregated from per-turn inference_latency_ms fields when present.",
+        "formula": "sum(inference_latency_ms) / scored_turns",
+    },
+    "risky_no_protect": {
+        "label": "Risky no-Protect",
+        "measures": "High-risk decisions that do not protect or neutralize the primary threat",
+        "compare": "Decision gate diagnostics",
+        "direction": "lower",
+        "summary": "Percentage of high-risk decision logs where the selected action was still exposed to the primary predicted threat.",
+        "estimation": "Counts selected defensive-gate diagnostics with high risk and no threat preemption/protect line.",
+        "formula": "risky_high_risk_no_protect_decisions / high_risk_decisions",
+    },
+    "primary_threat_coverage": {
+        "label": "Threat coverage",
+        "measures": "Whether risky positions answer the primary predicted threat",
+        "compare": "Decision gate diagnostics",
+        "direction": "higher",
+        "summary": "Percentage of high-risk decision logs where the selected action preempted or removed the primary predicted threat.",
+        "estimation": "Counts high-risk selected defensive-gate diagnostics with preempts_primary_threat.",
+        "formula": "covered_high_risk_decisions / high_risk_decisions",
+    },
+    "conflict": {
+        "label": "Conflict",
+        "measures": "Incompatible actions between agents",
+        "compare": "Pre-negotiation analysis",
+        "direction": "lower",
+        "summary": "Frequency of turns where negotiation or the chosen action indicates incompatibility.",
+        "estimation": "Aggregates by unique battle-turn. Counts conflict when there is a reject/veto, a veto_reason, relevant partner-damage risk, or a problematic double switch.",
+        "formula": "conflict_turns / analysed_turns",
+    },
+    "consistency": {
+        "label": "Consistency",
+        "measures": "Whether the agreed strategy is followed",
+        "compare": "Post-agreement analysis",
+        "direction": "higher",
+        "summary": "How often agents execute the action that was implicitly or explicitly agreed.",
+        "estimation": "Counts slots with a shared_joint_plan or shared protocol. A slot is consistent when the selected signature matches the local or partner signature in the plan.",
+        "formula": "consistent_planned_slots / planned_slots",
+    },
+    "generalization": {
+        "label": "Generalization",
+        "measures": "Success when allied teams are not fixed",
+        "compare": "Random-allies benchmark",
+        "direction": "higher",
+        "summary": "Performance when the allied team also varies, not only the opponents.",
+        "estimation": "Uses only battles without fixed allies in the same run. If the run is fixed-team only, this stays N/A for experimental hygiene.",
+        "formula": "non_fixed_wins / non_fixed_finished_battles",
+    },
+    "efficiency": {
+        "label": "Efficiency",
+        "measures": "Win-rate per cost",
+        "compare": "Latency, turns, etc.",
+        "direction": "higher",
+        "summary": "Quality obtained per unit of decision or gameplay cost.",
+        "estimation": "Uses win-rate points per average second when elapsed_seconds is available; otherwise uses win-rate points per average battle turn.",
+        "formula": "win_rate / avg_cost",
+    },
+}
+
+
+__all__ = [name for name in globals() if name != "annotations" and not name.startswith("__")]

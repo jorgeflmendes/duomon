@@ -1,0 +1,32 @@
+Urshifu-Rapid-Strike @ Mystic Water
+Ability: Unseen Fist
+Level: 80
+Tera Type: Water
+EVs: 4 HP / 252 Atk / 252 Spe
+Jolly Nature
+- Surging Strikes
+- Close Combat
+- Aqua Jet
+- Protect
+
+Incineroar @ Safety Goggles
+Ability: Intimidate
+Level: 80
+Tera Type: Grass
+EVs: 252 HP / 116 Def / 140 SpD
+Careful Nature
+- Fake Out
+- Flare Blitz
+- Knock Off
+- Parting Shot
+
+Rillaboom @ Assault Vest
+Ability: Grassy Surge
+Level: 80
+Tera Type: Grass
+EVs: 252 HP / 252 Atk / 4 SpD
+Adamant Nature
+- Fake Out
+- Grassy Glide
+- Wood Hammer
+- High Horsepower
