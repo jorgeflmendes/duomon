@@ -42,24 +42,24 @@ adversarial strategy, and intelligent agent design.
 
 ## Architecture
 
-```text
-Battle state
-   |----------------------|
-   v                      v
-Slot agent A          Slot agent B
-   | proposal              | proposal
-   +-----------> structured exchange
-                         |
-                         v
-             joint scoring + CTDE reranker
-                         |
-                         v
-                coordinated actions
+```mermaid
+flowchart LR
+    STATE["Battle state"] --> A["Slot agent A"]
+    STATE --> B["Slot agent B"]
+    A -->|"proposal"| EXCHANGE["Structured intent exchange"]
+    B -->|"proposal"| EXCHANGE
+    EXCHANGE --> JOINT["Joint scoring"]
+    JOINT --> CTDE["CTDE reranker"]
+    CTDE --> ACTIONS["Coordinated actions"]
+    ACTIONS --> SHOWDOWN["Pokemon Showdown battle"]
 ```
 
 Centralized training uses collected joint-action traces and terminal outcomes.
 At runtime, the two slot agents retain separate observations and action
 selection while exchanging structured coordination messages.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the runtime decision
+flow, offline training loop, and dashboard artifact boundary.
 
 ## Tech Stack
 
