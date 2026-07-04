@@ -1,133 +1,173 @@
 # DuoMon
 
+> Cooperative multi-agent decision-making for Pokémon Showdown multi battles.
+
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-green)](https://nodejs.org/)
+[![CI](https://github.com/jorgeflmendes/duomon/actions/workflows/python-checks.yml/badge.svg)](https://github.com/jorgeflmendes/duomon/actions/workflows/python-checks.yml)
 
-DuoMon is a cooperative multi-agent controller for Generation 9 Pokemon Showdown multi battles. Two allied slot agents act independently at execution time, exchange structured intent messages, and use a CTDE-trained joint-action reranker to choose coordinated turns. 
+DuoMon coordinates two allied slot agents that act independently at execution
+time. The agents exchange structured intent messages, evaluate joint actions,
+and use a CTDE-trained reranker to choose coordinated turns. A local benchmark
+pipeline captures outcomes, decision traces, and replays for inspection in a
+browser dashboard.
 
-The project is built for reproducible agent-reasoning experiments: local Showdown simulation, configurable opponents, replay capture, benchmark metrics, and a dashboard for inspecting both match outcomes and per-turn agent decisions.
+## Overview
 
-## Highlights
+Multi-battle decisions are coupled: individually strong moves can conflict,
+duplicate targets, or expose an ally. DuoMon makes that coordination explicit.
+Each agent scores legal actions, communicates a compact proposal, and
+participates in joint selection while preserving decentralized execution.
 
-- Cooperative multi-agent architecture with independent slot-agent execution.
-- CTDE-trained joint-action reranker using structured intent messages.
-- Deterministic local Showdown simulation with configurable benchmark opponents.
-- Support for generalization evaluation using randomly sampled ally teams.
-- Built-in dashboard for tracing per-turn agent decisions and analyzing battle replays.
+The repository is designed for reproducible game-AI experiments with
+configurable opponents, fixed or sampled teams, offline CTDE training, replay
+capture, and per-turn decision analysis.
+
+## Academic Context
+
+This project was developed as part of the **Autonomous Agents and Multi-Agent
+Systems** course unit at **Instituto Superior Técnico, University of Lisbon**.
+
+This project explores autonomous decision-making, multi-agent coordination,
+adversarial strategy, and intelligent agent design.
+
+## Key Features
+
+- Independent allied slot agents with structured intent exchange
+- CTDE-trained joint-action reranking
+- Legal-action generation, tactical scoring, and threat estimation
+- Configurable benchmark opponents and parallel battle execution
+- Fixed-team and random-team generalization evaluation
+- JSONL decision traces, replay capture, and aggregate metrics
+- Browser dashboard for match and per-turn reasoning inspection
+
+## Architecture
+
+```text
+Battle state
+   |----------------------|
+   v                      v
+Slot agent A          Slot agent B
+   | proposal              | proposal
+   +-----------> structured exchange
+                         |
+                         v
+             joint scoring + CTDE reranker
+                         |
+                         v
+                coordinated actions
+```
+
+Centralized training uses collected joint-action traces and terminal outcomes.
+At runtime, the two slot agents retain separate observations and action
+selection while exchanging structured coordination messages.
 
 ## Tech Stack
 
 - Python 3.11+
-- Node.js 20+
-- PyTorch (for CTDE training)
-- Pokemon Showdown Server & Client
+- PyTorch
+- Node.js 20+ and Pokémon Showdown
+- HTML, CSS, and JavaScript dashboard
+- JSONL-based experiment artifacts
 
-## Repository Layout
+## Repository Structure
 
-- `duomon/`: Core agent logic, battle adapters, and benchmarking framework.
-  - `agents/`: Slot-agent runtime, communication, joint selection.
-  - `battle/`: Multi-battle Showdown state adapters.
-  - `benchmarking/`: Benchmark runner, metrics, result collection.
-  - `core/`: Shared filesystem, JSONL, profiling and team utilities.
-  - `ctde/`: CTDE MLP data, features, training and evaluation.
-  - `heuristic/`: Tactical scoring, threat estimation, damage utilities.
-  - `opponents/`: Benchmark opponents.
-  - `policy_core/`: Legal action generation and independent slot scoring.
-- `experiments/`: Transformer pretraining experiment sandbox.
-- `scripts/`: Dataset builders, dependency setups, and CTDE training entrypoints.
-- `web/`: Browser-side dashboard modules, backend helpers, and CSS modules.
-- `teams/`: Curated ally teams for fixed benchmarks.
-
-## Quick Start
-
-### 1. Prerequisites
-
-- Python 3.11+
-- Node.js 20+
-- npm
-- Git
-
-### 2. Clone and Submodules
-
-```bash
-git clone --recurse-submodules <repo-url>
-cd Autonomous-Agents-And-Multi-Agent-Systems-26
+```text
+.
+|-- duomon/
+|   |-- agents/            # Communication and joint action selection
+|   |-- battle/            # Showdown state adapters
+|   |-- benchmarking/      # Runners, metrics, and reports
+|   |-- ctde/              # Features, models, training, and evaluation
+|   |-- heuristic/         # Tactical and damage scoring
+|   `-- policy_core/       # Legal actions and independent policies
+|-- experiments/           # Transformer experiment sandbox
+|-- scripts/               # Setup, dataset, and training entrypoints
+|-- teams/                 # Curated benchmark teams
+`-- web/                   # Dashboard and local server
 ```
 
-*(If cloned without submodules, run: `git submodule update --init --recursive`)*
+## Getting Started
 
-### 3. Install Dependencies & Build
+Prerequisites: Python 3.11+, Node.js 20+, npm, and Git.
 
 ```bash
+git clone --recurse-submodules https://github.com/jorgeflmendes/duomon.git
+cd duomon
 python -m pip install -r requirements.txt
 python scripts/setup/external_dependencies.py --build
 ```
 
-### 4. Start the Dashboard
+If the repository was cloned without submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
+Start the dashboard:
 
 ```bash
 python web/demo_server.py
 ```
-*(On Windows you can also use `start_demo.bat`)*
 
-Then open your browser at `http://127.0.0.1:8765/`.
+Then open `http://127.0.0.1:8765/`.
 
-## Configuration Model
-
-Runtime configuration is defined via environment variables.
-
-Main variables:
-
-- `DUOMON_PROFILE`: Runtime profile (`ctde_mlp` by default).
-- `DUOMON_BATTLES_PER_OPPONENT`: Amount of battles to run per opponent (`100` by default).
-- `DUOMON_OUTPUT_DIR`: Directory for benchmark outputs and replays.
-- `DUOMON_MODEL_DIR`: Directory containing generated CTDE training artifacts.
-- `DUOMON_FIXED_ALLY_TEAMS`: Set to `1` to use fixed curated ally teams, or `0` for random.
-- `DUOMON_PARALLEL_BATTLES`: Maximum number of concurrent benchmark battles (`32` by default).
-- `DUOMON_AUTOSTART_SHOWDOWN`: Set to `1` to let the runner start Showdown automatically.
-
-## Benchmarks & Commands
-
-Default benchmark profile:
-
-```bash
-python -m duomon
-```
-
-Fixed ally-team benchmark with explicit profile:
-
-```bash
-DUOMON_FIXED_ALLY_TEAMS=1 DUOMON_PROFILE=ctde_mlp python -m duomon
-```
-
-Small smoke test targeting specific opponents:
+Run a small benchmark:
 
 ```bash
 python -m duomon --profile ctde_mlp --opponents simpleheuristics,abyssal --battles 5
 ```
 
-## Training Workflow
+Train the reranker from collected traces:
 
-CTDE training is offline and uses the decision traces produced by previous benchmarks.
+```bash
+python scripts/training/train_ctde.py --opponent both
+```
 
-1. **Collect Traces:** Run a benchmark to gather candidate-pairs and terminal outcomes.
-   ```bash
-   DUOMON_PROFILE=ctde_mlp python -m duomon --opponents simpleheuristics,abyssal --battles 100
-   ```
-2. **Train Models:** Run the CTDE training script on the generated logs.
-   ```bash
-   python scripts/training/train_ctde.py --opponent both
-   ```
-3. **Evaluate:** Run a new benchmark using the trained profile to evaluate the resulting reranker.
-   ```bash
-   DUOMON_PROFILE=ctde_mlp python -m duomon --opponents simpleheuristics,abyssal --battles 100
-   ```
+Runtime paths and behavior can be configured with the documented `DUOMON_*`
+environment variables in [.env.example](.env.example).
 
-## Current Results
+## Running Tests
 
-Latest validated local runs, using the `ctde_mlp` profile with structured communication enabled:
+The repository does not yet contain a full automated behavioral test suite.
+GitHub Actions performs portable Python syntax compilation on the core package,
+scripts, and dashboard server. For a functional smoke run, initialize the
+submodules and execute:
+
+```bash
+python -m duomon --profile ctde_mlp --opponents simpleheuristics --battles 1
+```
+
+## Results
+
+Latest validated local runs using structured communication and the `ctde_mlp`
+profile:
 
 | Mode | Battles | Finished | Errors | Overall WR | Random | MaxPower | Simple | Abyssal |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Fixed ally teams | 800 | 800 | 0 | 87.0% | 99.5% | 94.5% | 78.0% | 76.0% |
 | Random ally teams | 800 | 793 | 7 | 75.9% | 97.0% | 89.0% | 58.5% | 58.5% |
+
+These are local experimental results, not claims about competitive ladder
+performance.
+
+## Limitations
+
+- Full experiments require local Pokémon Showdown server and client submodules.
+- Current CI checks portability and syntax but does not run battle simulations.
+- Results depend on the configured opponents, teams, seeds, and trained artifacts.
+- The repository does not currently provide a standalone license.
+
+## Roadmap
+
+- Add deterministic unit and integration tests
+- Publish dashboard and replay visuals
+- Add benchmark ablations for communication and CTDE reranking
+- Provide a containerized reproducibility workflow
+- Document model artifacts and experiment seeds in a model card
+
+## Usage Note
+
+DuoMon is an independent academic project. It is not affiliated with,
+endorsed by, or sponsored by Pokémon, Nintendo, Game Freak, Creatures Inc., or
+the Pokémon Showdown project. Pokémon and related names are trademarks of their
+respective owners. Review the licenses of the upstream submodules before reuse.
